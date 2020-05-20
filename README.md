@@ -6,5 +6,4 @@ Below is a tentive, work-in-progress list of Byte Script's instruction set:
 |Instruction Code (ASCII)|Description|
 |------------------------|-----------|
 |0                       |Terminator |
-|
 
