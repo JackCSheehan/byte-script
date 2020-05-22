@@ -15,7 +15,7 @@ Below is a tentative, work-in-progress list of Byte Script's instruction set:
 |36 ($)                   |print from current cell onward until a 0 is encountered                   |
 |60 (<)                   |move left given number of cells                                           |
 |62 (>)                   |move right given number of cells                                          |
-|94 (^)                   |go to the given cell                                                      |
+|94 (^)                   |jump to the given cell                                                    |
 |43 (+)                   |add to current cell                                                       |
 |45 (-)                   |subtract from current cell                                                |
 |42 (\*)                  |multiply to current cell                                                  |
