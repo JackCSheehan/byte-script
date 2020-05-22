@@ -3,7 +3,7 @@ An esoteric programming language made up of 1-byte long instructions. Byte Scrip
 
 Byte Script is inspired by BF, but it is intended to be easier to use and understand, faster to execute, and produce smaller interpreter sources.
 
-Below is a tentative, work-in-progress list of Byte Script's instruction set:
+Below is a tentative, work-in-progress list of Byte Script's instruction set (Descriptions marked with asterisks are in early stages and may not be implemented or may be changed):
 
 |Instruction Code (ASCII)|Description|
 |------------------------|-----------|
@@ -21,6 +21,7 @@ Below is a tentative, work-in-progress list of Byte Script's instruction set:
 |45 (-)                   |subtract from current cell                                                                    |
 |42 (\*)                  |multiply to current cell                                                                      |
 |47 (/)                   |divide current cell                                                                           |
+|35 (#)                   |\*import the given .bss or .bse file's instructions                                           |
 
 ## Examples
 Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
