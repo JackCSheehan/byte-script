@@ -7,19 +7,20 @@ Below is a tentative, work-in-progress list of Byte Script's instruction set:
 
 |Instruction Code (ASCII)|Description|
 |------------------------|-----------|
-|59 (;)                   |terminator                                                                |
-|61 (=)                   |assign value to current cell                                              |
-|63 (?)                   |if start                                                                  |
-|58 (:)                   |else start                                                                |
-|64 (@)                   |loop start                                                                |
-|36 ($)                   |print from current cell onward until a 0 is encountered                   |
-|60 (<)                   |move left given number of cells                                           |
-|62 (>)                   |move right given number of cells                                          |
-|94 (^)                   |jump to the given cell                                                    |
-|43 (+)                   |add to current cell                                                       |
-|45 (-)                   |subtract from current cell                                                |
-|42 (\*)                  |multiply to current cell                                                  |
-|47 (/)                   |divide current cell                                                       |
+|59 (;)                   |terminator                                                                                    |
+|61 (=)                   |assign value to current cell                                                                  |
+|63 (?)                   |if start                                                                                      |
+|58 (:)                   |else start                                                                                    |
+|64 (@)                   |loop start                                                                                    |
+|36 ($)                   |print from current cell onward until a 0 is encountered                                       |
+|34 (")                   |input the given number of bytes into the tape starting at the current cell from standard input|
+|60 (<)                   |move left given number of cells                                                               |
+|62 (>)                   |move right given number of cells                                                              |
+|94 (^)                   |jump to the given cell                                                                        |
+|43 (+)                   |add to current cell                                                                           |
+|45 (-)                   |subtract from current cell                                                                    |
+|42 (\*)                  |multiply to current cell                                                                      |
+|47 (/)                   |divide current cell                                                                           |
 
 ## Examples
 Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
