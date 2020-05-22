@@ -22,8 +22,10 @@ Below is a tentative, work-in-progress list of Byte Script's instruction set (De
 |42 (\*)                  |multiply to current cell                                                                      |
 |47 (/)                   |divide current cell                                                                           |
 |35 (#)                   |\*import the given .bss or .bse file's instructions                                           |
+|46 (.)                   |\*define a function with the given name                                                       |
+|33 (!)                   |\*call a function with the given name                                                         |
 
-## Examples
+## Introduction
 Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
 ```
 >10;
@@ -35,3 +37,8 @@ You can also add an argument to the increment instruction to add a given number 
 +10;
 ```
 The above instruction adds 10 to the current cell.
+
+By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). Any attempt to input a larger integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in floating-point will simply be truncated.  
+
+## The Instruction Set
+Below is an explanataion of 
