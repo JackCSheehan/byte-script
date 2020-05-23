@@ -47,7 +47,7 @@ You can also add an argument to the increment instruction to add a given number 
 ```
 The above instruction adds 10 to the current cell.
 
-By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). Any attempt to input a larger integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in floating-point will simply be truncated.  
+By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). Any attempt to input a larger or smaller integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in floating-point will simply be truncated.  
 
 ## The Instruction Set
 Below is an explanation of each of the instructions that Byte Script currently implements. Instructions with an asterisk are currently still in developmental or planning stages and may not be implemented. Even though the Byte Script instruction set looks relatively arbitrary, each one was picked for a specific reason.
