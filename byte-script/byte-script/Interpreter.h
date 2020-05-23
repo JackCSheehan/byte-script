@@ -3,7 +3,7 @@
 
 #include <string>
 #include <fstream>
-#include <iostream> //remove import
+#include <iostream>
 #include <deque>
 #include "IOExceptions.h"
 #include "InstructionUtils.h"
@@ -26,6 +26,7 @@ private:
    void print();
    void moveLeft(unsigned char);
    void moveRight(unsigned char);
+   void jump(unsigned char);
    void add(unsigned char);
    void subtract(unsigned char);
    void multiply(unsigned char);

@@ -1,4 +1,13 @@
-# byte-script
+# Byte Script 1.0
+### Goals for this release:
+* Plan out the basic constructs of the language
+    * Lay out the capabilities of the language
+* Implement a basic interpreter and preprocessor
+
+### Future goals:
+* Improve efficiency of preprocessor and interpreter
+
+# Byte Script Design Specifications
 An esoteric programming language made up of 1-byte long instructions. Byte Script data is stored in a program tape where each cell is an 8-byte integer.
 
 Byte Script is inspired by BF, but it is intended to be easier to use and understand, faster to execute, and produce smaller interpreter sources.
@@ -41,4 +50,21 @@ The above instruction adds 10 to the current cell.
 By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). Any attempt to input a larger integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in floating-point will simply be truncated.  
 
 ## The Instruction Set
-Below is an explanataion of 
+Below is an explanation of each of the instructions that Byte Script currently implements. Instructions with an asterisk are currently still in developmental or planning stages and may not be implemented. Even though the Byte Script instruction set looks relatively arbitrary, each one was picked for a specific reason.
+
+A quick note on arguments: for instructions that take arguments, the default argument is always `1`. This is so that instructions such as `>;` work similar to their corresponding instructions in BF.
+
+### Terminator (;)
+The terminator instruction acts a Byte Script punctuation. Every statement in Byte Script requires a terminator to close it off. The terminator is inspired by the ';' character being used as a punctuating token in languages like C, C++, Java, etc.
+
+### Assignment Instruction (=)
+The assignment instruction assigns the given value to the current cell. This makes it so that users do not have to increment a cell until they get to their desired value. Instead, a user can simply directly assign the value of a cell.
+
+Examples:
+```
+Assign fifteen to the current cell
+=15;
+
+Reassign the current cell to twenty
+=20;
+```
