@@ -4,7 +4,7 @@
 Searches the instruction set for the given character. Returns true if the given character is an instruction character
 and false if it is not.
 */
-bool InstructionUtils::isInstruction(char c)
+bool InstructionUtils::isToken(char c)
 {
    bool wasInstructionFound = false;   //Keeps track of whether or not instruction was found
    
@@ -26,6 +26,8 @@ bool InstructionUtils::isInstruction(char c)
    case MULTIPLY:
    case DIVIDE:
    case IMPORT:
+   case BLOCK_OPEN:
+   case BLOCK_CLOSE:
       wasInstructionFound = true;
    }
 

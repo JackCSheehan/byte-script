@@ -42,7 +42,7 @@ void Preprocessor::process()
    while (sourceFile.get(currentChar))
    {
       //If the current character is an instruction or a digit, write it to the executable file
-      if (InstructionUtils::isInstruction(currentChar) || std::isdigit(currentChar))
+      if (InstructionUtils::isToken(currentChar) || std::isdigit(currentChar))
       {
          //Write the current instruction to the executable file
          executableFile.write(reinterpret_cast<char*>(&currentChar), 1);
