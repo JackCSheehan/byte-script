@@ -81,5 +81,16 @@ public:
    }
 };
 
+/*
+Exception if user tries to divide a cell by 0.
+*/
+class DivisionByZeroException
+{
+public:
+   std::string what() const
+   {
+      return "Attempted to divide by 0";
+   }
+};
 
 #endif

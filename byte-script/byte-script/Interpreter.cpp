@@ -56,6 +56,9 @@ void Interpreter::interpret()
       case MOVE_RIGHT:
          moveRight(argument);
          break;
+      case JUMP:
+         jump(argument);
+         break;
       case ADD:
          add(argument);
          break;
@@ -137,14 +140,39 @@ void Interpreter::assign(unsigned char value)
    tape[cellPointer] = value;
 }
 
+/*
+Prints all the characters in the tape from the cell pointer to the first ASCII 0 or until the end of the allocated
+tape. Cell pointer is not changed.
+*/
 void Interpreter::print()
 {
+   int printCounter = cellPointer;  //Pointer that iterates through tape
 
+   //Iterate through the tape until an escape character is found
+   while (printCounter < tape.size() && tape[printCounter] != 0)
+   {
+      std::cout << tape[printCounter];
+
+      ++printCounter;
+   }
 }
 
-void Interpreter::moveLeft(unsigned char)
+/*
+Moves the cell pointer left the given number of spaces. If the user tries to move left of cell 0, the cell pointer
+will go to cell 0 but will never go below it.
+*/
+void Interpreter::moveLeft(unsigned char cells)
 {
-
+   //If the cell pointer would go too far, set it to 0
+   if (cells > cellPointer)
+   {
+      cellPointer = 0;
+   }
+   //If not, just subtract the given number of cells
+   else
+   {
+      cellPointer -= cells;
+   }
 }
 
 /*
@@ -152,27 +180,79 @@ Moves right the given number of cells. If not enough space, will add more cells 
 */
 void Interpreter::moveRight(unsigned char cells)
 {
-   int cellsToAdd;   //The number of cells needed to add
+   int cellsToAdd;   //The number of cells needed to be added to the program tape
+
+   //Calculate the number of cells to add
+   cellsToAdd = (cellPointer + cells) - (tape.size() - 1);
+
+   //If cells need to be added, then add them
+   if (cellsToAdd > 0)
+   {
+      tape.insert(tape.end(), cellsToAdd, DEFAULT_CELL_VALUE); 
+   }
+
+   //Increment the cell pointer so that it points to the right cell
+   cellPointer += cells;
 }
 
-void Interpreter::add(unsigned char)
+/*
+Moves the cell pointer to the given cell. Does nothing if given cell is the same as the cell pointer.
+*/
+void Interpreter::jump(unsigned char cell)
 {
+   //Call either the go left or go right functions depending on which direction the pointer has to move
+   if (cell < cellPointer)
+   {
+      moveLeft(cellPointer - cell);
+   }
+   else
+   {
+      moveRight(cell - cellPointer);
+   }
 
+   /*
+   Note: the cell pointer is not simply assigned the jump value because certain checks are in place in both the
+   moveLeft and moveRight functions.
+   */
 }
 
-void Interpreter::subtract(unsigned char)
+/*
+Adds the given value to the current cell. Cell will wrap around if it exceeds the bounds of an unsigned character.
+*/
+void Interpreter::add(unsigned char value)
 {
-
+   tape[cellPointer] += value;
 }
 
-void Interpreter::multiply(unsigned char)
+/*
+Subtracts the given value to the cell. Cell will wrap around if it exceeds the bounds of an unsigned character.
+*/
+void Interpreter::subtract(unsigned char value)
 {
-
+   tape[cellPointer] -= value;
 }
 
-void Interpreter::divide(unsigned char)
+/*
+Multiplies the given value to the cell. Cell will wrap around if it exceeds the bounds of an unsigned character.
+*/
+void Interpreter::multiply(unsigned char value)
 {
+   tape[cellPointer] *= value;
+}
 
+/*
+Divides the current cell value by the given value. Cell will wrap around if it exceeds the bounds of an 
+unsigned character. Decimcals will be truncated. If the given value is 0, an exception will be thrown.
+*/
+void Interpreter::divide(unsigned char value)
+{
+   //Check for division by 0
+   if (value == 0)
+   {
+      throw DivisionByZeroException();
+   }
+   
+   tape[cellPointer] /= value;
 }
 
 /*

@@ -11,5 +11,8 @@ int main()
    Interpreter interpreter("source.bse");
    interpreter.interpret();
 
+
+   //TODO: add try/catch to moveRight()
+   //TODO: Add check for periods in preprocessor
    return 0;
 }

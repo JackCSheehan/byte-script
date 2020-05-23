@@ -17,12 +17,15 @@ bool InstructionUtils::isInstruction(char c)
    case ELSE_START:
    case LOOP_START:
    case PRINT:
+   case INPUT:
    case MOVE_LEFT:
    case MOVE_RIGHT:
+   case JUMP:
    case ADD:
    case SUBTRACT:
    case MULTIPLY:
    case DIVIDE:
+   case IMPORT:
       wasInstructionFound = true;
    }
 
