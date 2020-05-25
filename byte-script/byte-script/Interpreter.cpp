@@ -50,6 +50,9 @@ void Interpreter::interpret()
       case PRINT:
          print();
          break;
+      case INPUT:
+         input(argument);
+         break;
       case MOVE_LEFT:
          moveLeft(argument);
          break;
@@ -155,6 +158,41 @@ void Interpreter::print()
 
       ++printCounter;
    }
+}
+
+/*
+Gets the given number of bytes of input from standard input. Adds those bytes to the program tape starting at the
+cell pointer. If more data is entered than was requested, it will be truncated. A \0 is automatically added. 
+*/
+void Interpreter::input(unsigned char bytes)
+{
+   std::string input;               //Input given by user
+   int tapeCounter = cellPointer;   //Counts along program tape to insert the input
+
+   //Use the move functions to ensure that the necessary amount of space is allocated for the input
+   if ((cellPointer + bytes) > tape.size())
+   {
+      //Move right to allocate the space
+      moveRight(bytes);
+
+      //Move left to return the cell pointer back to its original location
+      moveLeft(bytes);
+   }
+
+   //Get the user's input
+   std::getline(std::cin, input);
+
+   //Add the input to the program tape
+   for (int characterCount = 0; (characterCount < bytes - 1) && (characterCount < input.size()); ++characterCount)
+   {
+      //Add the current character to the program tape
+      tape[tapeCounter] = input.at(characterCount);
+
+      ++tapeCounter;
+   }
+
+   //Add the null terminator
+   tape[tapeCounter] = '\0';
 }
 
 /*
