@@ -35,9 +35,11 @@ This class contains utility functions for dealing with the Byte Script instructi
 class InstructionUtils
 {
 public:
-   //TODO: add is non-sequential instruction and is sequential instruction
    static bool isToken(char);
    static bool isTerminator(char);
+   static bool isSequentialInstruction(char);
+   static bool isNonSequentialInstruction(char);
+   static bool isSeparator(char);
 };
 
 #endif
