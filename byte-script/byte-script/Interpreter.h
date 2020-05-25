@@ -24,6 +24,7 @@ private:
    //Functions for specific instructions
    void assign(unsigned char);
    void print();
+   void input(unsigned char);
    void moveLeft(unsigned char);
    void moveRight(unsigned char);
    void jump(unsigned char);
