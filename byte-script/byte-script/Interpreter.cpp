@@ -35,47 +35,59 @@ void Interpreter::interpret()
 {
    char currentInstruction;   //The current instruction being read from the executable
    unsigned char argument;    //The argument of the current instruction
+   std::string block;         //The block of the current instruction
 
    //Iterate through each character in the executable file
    while (executableFile.get(currentInstruction))
    {
-      argument = getArgument();
-
-      //Determine which instruction should be run
-      switch (currentInstruction)
+      //Specific steps for parsing sequential instructions
+      if (InstructionUtils::isSequentialInstruction(currentInstruction))
       {
-      case ASSIGNMENT:
-         assign(argument);
-         break;
-      case PRINT:
-         print();
-         break;
-      case INPUT:
-         input(argument);
-         break;
-      case MOVE_LEFT:
-         moveLeft(argument);
-         break;
-      case MOVE_RIGHT:
-         moveRight(argument);
-         break;
-      case JUMP:
-         jump(argument);
-         break;
-      case ADD:
-         add(argument);
-         break;
-      case SUBTRACT:
-         subtract(argument);
-         break;
-      case MULTIPLY:
-         multiply(argument);
-         break;
-      case DIVIDE:
-         divide(argument);
-         break;
-      default:
-         throw SyntaxErrorException(executableFile.tellg());
+         argument = getSequentialArgument();
+
+         //Determine which instruction should be run
+         switch (currentInstruction)
+         {
+         case ASSIGNMENT:
+            assign(argument);
+            break;
+         case PRINT:
+            print();
+            break;
+         case INPUT:
+            input(argument);
+            break;
+         case MOVE_LEFT:
+            moveLeft(argument);
+            break;
+         case MOVE_RIGHT:
+            moveRight(argument);
+            break;
+         case JUMP:
+            jump(argument);
+            break;
+         case ADD:
+            add(argument);
+            break;
+         case SUBTRACT:
+            subtract(argument);
+            break;
+         case MULTIPLY:
+            multiply(argument);
+            break;
+         case DIVIDE:
+            divide(argument);
+            break;
+         default:
+            throw SyntaxErrorException(executableFile.tellg());
+         }
+      }
+      //Specific steps for evaluating non-sequential instructions
+      else if (InstructionUtils::isNonSequentialInstruction(currentInstruction))
+      {
+         //Get the block of this instruction
+         block = getBlock();
+         std::cout << block << "\n";
       }
    }
 }
@@ -87,11 +99,11 @@ if the argument cannot be read (such as if it is bigger than a 4-byte integer). 
 unsigned char, meaning that if the value is greater than a char, it will wrap around until it is within the valid
 range for a char.
 */
-unsigned char Interpreter::getArgument()
+unsigned char Interpreter::getSequentialArgument()
 {
    unsigned char argumentValue;     //The actual value of the argument
-   std::string argument;   //The argument read from the file (might be multiple characters)
-   char currentCharacter;  //The current character being read from the file
+   std::string argument;            //The argument read from the file (might be multiple characters)
+   char currentCharacter;           //The current character being read from the file
 
    //Get all the characters until a terminator is found
    do
@@ -133,6 +145,54 @@ unsigned char Interpreter::getArgument()
    This is done automatically in C++ when returning an int from a function with type unsigned char
    */
    return argumentValue;
+}
+
+/*
+This functions gets the argument of a non-sequential instruction. The only planned support for non-sequential
+arguments will be functions.
+*/
+unsigned char Interpreter::getNonSequentialArgument()
+{
+   return ' ';
+}
+
+/*
+Gets the block of code after a non-sequential instruction (e.g. ifs, loops, and elses). Throws syntax error
+exception if the instruction is not immediately followed by an open separator.
+*/
+std::string Interpreter::getBlock()
+{
+   std::string block;      //The block parsed from the non-sequential instruction
+   char currentCharacter;  //The current character being read from the file
+   
+   executableFile.get(currentCharacter);
+
+   //Throw syntax error if the first character after the non-sequential instruction is not an BLOCK_OPEN token
+   if (currentCharacter != BLOCK_OPEN)
+   {
+      throw SyntaxErrorException(executableFile.tellg());
+   }
+
+   //Iterate through the rest of the block until a BLOCK_CLOSE is found
+   do
+   {
+      executableFile.get(currentCharacter);
+
+      //If EOF is reached, throw an exception
+      if (executableFile.eof())
+      {
+         throw ReachedEOFException();
+      }
+
+      //Append the current character to the block
+      block += currentCharacter;
+
+   } while (currentCharacter != BLOCK_CLOSE);
+
+   //Remove the last character of the block (the closing brace)
+   block = block.substr(0, block.length() - 1);
+
+   return block;
 }
 
 /*
@@ -280,7 +340,7 @@ void Interpreter::multiply(unsigned char value)
 
 /*
 Divides the current cell value by the given value. Cell will wrap around if it exceeds the bounds of an 
-unsigned character. Decimcals will be truncated. If the given value is 0, an exception will be thrown.
+unsigned character. Decimals will be truncated. If the given value is 0, an exception will be thrown.
 */
 void Interpreter::divide(unsigned char value)
 {

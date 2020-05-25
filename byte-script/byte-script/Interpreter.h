@@ -19,7 +19,9 @@ private:
    std::deque<unsigned char> tape;  //Program tape
 
    //Helper functions
-   unsigned char getArgument();
+   unsigned char getSequentialArgument();
+   unsigned char getNonSequentialArgument();
+   std::string getBlock();
 
    //Functions for specific instructions
    void assign(unsigned char);
