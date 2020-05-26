@@ -29,21 +29,29 @@ Interpreter::~Interpreter()
 }
 
 /*
-Interprets the given executable and displays the output to the console.
+Used so that the user can call interpret() with no arguments.
 */
 void Interpreter::interpret()
 {
+   interpret(executableFile);
+}
+
+/*
+Interprets the given stream and displays the output to the console.
+*/
+void Interpreter::interpret(std::istream& stream)
+{
    char currentInstruction;   //The current instruction being read from the executable
    unsigned char argument;    //The argument of the current instruction
-   std::string block;         //The block of the current instruction
+   std::stringstream block;   //The block of the current instruction
 
    //Iterate through each character in the executable file
-   while (executableFile.get(currentInstruction))
+   while (stream.get(currentInstruction))
    {
       //Specific steps for parsing sequential instructions
       if (InstructionUtils::isSequentialInstruction(currentInstruction))
       {
-         argument = getSequentialArgument();
+         argument = getSequentialArgument(stream);
 
          //Determine which instruction should be run
          switch (currentInstruction)
@@ -85,21 +93,37 @@ void Interpreter::interpret()
       //Specific steps for evaluating non-sequential instructions
       else if (InstructionUtils::isNonSequentialInstruction(currentInstruction))
       {
-         //Get the block of this instruction
-         block = getBlock();
-         std::cout << block << "\n";
+         //Determine what to do depending on the current instruction
+         switch (currentInstruction)
+         {
+         case IF_START:
+            block = getBlock(stream);
+            interpretIf(block);
+            break;
+         case ELSE_START:
+            block = getBlock(stream);
+            interpretElse(block);
+            break;
+         case LOOP_START:
+            //Get argument and block for the loop
+            argument = getSequentialArgument(stream);
+            block = getBlock(stream);
+
+            interpretLoop(block, argument);
+            break;
+         }
       }
    }
 }
 
 /*
-This function gets the argument of the instruction at the current position in the executable file. Throws a
+This function gets the argument of the instruction at the current position in the stream. Throws a
 SyntaxErrorException if the argument could not be read or if there is no terminator. Throws InvalidArgumentException
 if the argument cannot be read (such as if it is bigger than a 4-byte integer). Returns the argument value as an
 unsigned char, meaning that if the value is greater than a char, it will wrap around until it is within the valid
 range for a char.
 */
-unsigned char Interpreter::getSequentialArgument()
+unsigned char Interpreter::getSequentialArgument(std::istream& stream)
 {
    unsigned char argumentValue;     //The actual value of the argument
    std::string argument;            //The argument read from the file (might be multiple characters)
@@ -108,10 +132,10 @@ unsigned char Interpreter::getSequentialArgument()
    //Get all the characters until a terminator is found
    do
    {
-      executableFile.get(currentCharacter);
+      stream.get(currentCharacter);
 
       //If EOF is reached, throw an exception
-      if (executableFile.eof())
+      if (stream.eof())
       {
          throw ReachedEOFException();
       }
@@ -148,8 +172,7 @@ unsigned char Interpreter::getSequentialArgument()
 }
 
 /*
-This functions gets the argument of a non-sequential instruction. The only planned support for non-sequential
-arguments will be functions.
+This functions gets the argument of a non-sequential instruction, such as the argument of the loop isntruction.
 */
 unsigned char Interpreter::getNonSequentialArgument()
 {
@@ -160,37 +183,55 @@ unsigned char Interpreter::getNonSequentialArgument()
 Gets the block of code after a non-sequential instruction (e.g. ifs, loops, and elses). Throws syntax error
 exception if the instruction is not immediately followed by an open separator.
 */
-std::string Interpreter::getBlock()
+std::stringstream Interpreter::getBlock(std::istream& stream)
 {
-   std::string block;      //The block parsed from the non-sequential instruction
-   char currentCharacter;  //The current character being read from the file
+   int expectedClosingBraces = 1;   //The expected number of closing braces; needed so that nested loops/ifs work
+   int foundClosingBraces = 0;      //Number of braces found
+   std::stringstream block;         //The block parsed from the non-sequential instruction
+   char currentCharacter;           //The current character being read from the file
    
-   executableFile.get(currentCharacter);
+   stream.get(currentCharacter);
 
    //Throw syntax error if the first character after the non-sequential instruction is not an BLOCK_OPEN token
    if (currentCharacter != BLOCK_OPEN)
    {
-      throw SyntaxErrorException(executableFile.tellg());
+      throw SyntaxErrorException(stream.tellg());
    }
 
    //Iterate through the rest of the block until a BLOCK_CLOSE is found
    do
    {
-      executableFile.get(currentCharacter);
+      stream.get(currentCharacter);
 
       //If EOF is reached, throw an exception
-      if (executableFile.eof())
+      if (stream.eof())
       {
          throw ReachedEOFException();
       }
 
-      //Append the current character to the block
-      block += currentCharacter;
+      //Keep track of opening/closing braces
+      switch (currentCharacter)
+      {
+         //When an open brace is encountered, the interpreter needs to expect another closing brace
+      case BLOCK_OPEN:
+         ++expectedClosingBraces;
+         break;
+         //When a closing brace is encountered, the interpreter needs to keep track of that so that
+         //nested if statements/loops work
+      case BLOCK_CLOSE:
+         ++foundClosingBraces;
+         break;
+      }
 
-   } while (currentCharacter != BLOCK_CLOSE);
+      //Append the current character to the block
+      block << currentCharacter;
+
+   } while (expectedClosingBraces != foundClosingBraces);
 
    //Remove the last character of the block (the closing brace)
-   block = block.substr(0, block.length() - 1);
+   std::string blockCopy(block.str());
+   block.str("");
+   block << blockCopy.substr(0, blockCopy.length() - 1);
 
    return block;
 }
@@ -351,6 +392,43 @@ void Interpreter::divide(unsigned char value)
    }
    
    tape[cellPointer] /= value;
+}
+
+/*
+Interprets an if statement given the instruction block. Runs the block if the current cell is 0.
+*/
+void Interpreter::interpretIf(std::stringstream& block)
+{
+   //If the current cell is zero, interpret the block
+   if (tape[cellPointer] == 0)
+   {
+      interpret(block);
+   }
+}
+
+/*
+Interprets an else statement given the instruction block. Runs the block if the current cell is NOT 0.
+*/
+void Interpreter::interpretElse(std::stringstream& block)
+{
+   if (tape[cellPointer] != 0)
+   {
+      interpret(block);
+   }
+}
+
+/*
+Interprets a loop given the block and the argument.
+*/
+void Interpreter::interpretLoop(std::stringstream& block, unsigned char argument)
+{
+   //Loop the number of times indicated by the argument
+   for (int loopCounter = 0; loopCounter < argument; loopCounter++)
+   {
+      //Copy block to avoid changes being made to original block stream
+      std::stringstream blockCopy(block.str());
+      interpret(blockCopy);
+   }
 }
 
 /*
