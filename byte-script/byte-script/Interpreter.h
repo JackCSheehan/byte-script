@@ -2,7 +2,9 @@
 #define INTERPRETER_H
 
 #include <string>
+#include <sstream>
 #include <fstream>
+#include <istream>
 #include <iostream>
 #include <deque>
 #include "IOExceptions.h"
@@ -19,9 +21,9 @@ private:
    std::deque<unsigned char> tape;  //Program tape
 
    //Helper functions
-   unsigned char getSequentialArgument();
+   unsigned char getSequentialArgument(std::istream&);
    unsigned char getNonSequentialArgument();
-   std::string getBlock();
+   std::stringstream getBlock(std::istream&);
 
    //Functions for specific instructions
    void assign(unsigned char);
@@ -35,11 +37,16 @@ private:
    void multiply(unsigned char);
    void divide(unsigned char);
 
+   void interpretIf(std::stringstream&);
+   void interpretElse(std::stringstream&);
+   void interpretLoop(std::stringstream&, unsigned char);
+
 public:
    Interpreter(std::string);
    ~Interpreter();
 
    void interpret();
+   void interpret(std::istream&);
    void finish();
 };
 

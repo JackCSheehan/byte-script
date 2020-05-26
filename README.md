@@ -211,29 +211,17 @@ Assign current cell to five if the current cell is zero and assign the current c
 ```
 
 ### Loop Start (@)
-Repeats the Byte Script code inside the braces until the current cell is equal to 0. Program will thrown an error if no braces are present.
+Repeats the Byte Script code inside the braces until the given number of times.
 
 Example:
 ```
-Jump to cell five
-^5;
-
-Make current cell value ten
-=10;
-
-Print string that starts at cell zero ten times
-@
+Print string that starts at cell zero twenty times
+@20;
 {
     Jump to cell zero
     ^0;
 
     Print string starting at cell zero
     $;
-
-    Jump back to cell five
-    ^5;
-
-    Decrease cell five by one
-    -;
 }
 ```
