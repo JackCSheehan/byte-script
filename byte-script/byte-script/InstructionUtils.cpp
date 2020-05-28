@@ -24,7 +24,6 @@ bool InstructionUtils::isToken(char c)
    case SUBTRACT:
    case MULTIPLY:
    case DIVIDE:
-   case IMPORT:
    case BLOCK_OPEN:
    case BLOCK_CLOSE:
       wasTokenFound = true;
@@ -60,7 +59,6 @@ bool InstructionUtils::isSequentialInstruction(char c)
    case SUBTRACT:
    case MULTIPLY:
    case DIVIDE:
-   case IMPORT:
       wasTokenFound = true;
    }
 

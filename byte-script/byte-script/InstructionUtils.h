@@ -15,7 +15,6 @@ const char ADD = '+';
 const char SUBTRACT = '-';
 const char MULTIPLY = '*';
 const char DIVIDE = '/';
-const char IMPORT = '#';
 
 //Non-sequential instructions
 const char IF_START = '?';

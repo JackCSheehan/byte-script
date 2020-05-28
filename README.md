@@ -1,7 +1,7 @@
 # Byte Script Language Specifications
-Byte script is an esoteric programming language made up of 1-byte long instructions. Byte Script data is stored in a program tape where each cell is an 8-byte integer.
+Byte script is an esoteric programming language made up of 1-byte long instructions. Byte Script data is stored in a program tape where each cell is an 8-byte integer. A cell tape pointer points to a specific index on the program tape and instructions can be used to change both the cell pointer and the value pointed to by the cell pointer.
 
-Byte Script is inspired by BF, but it is intended to be easier to use and understand, faster to execute, and produce smaller interpreter sources.
+Byte Script is inspired by BF, but it is intended to be easier to use and understand and produce smaller interpreter sources.
 
 Below is a tentative, work-in-progress list of Byte Script's instruction set (Descriptions marked with asterisks are in early stages and may not be implemented or may be changed):
 
@@ -21,9 +21,6 @@ Below is a tentative, work-in-progress list of Byte Script's instruction set (De
 |45 (-)                   |subtract from current cell                                                                    |
 |42 (\*)                  |multiply to current cell                                                                      |
 |47 (/)                   |divide current cell                                                                           |
-|35 (#)                   |\*import the given .bss or .bse file's instructions                                           |
-|46 (.)                   |\*define a function with the given name                                                       |
-|33 (!)                   |\*call a function with the given name                                                         |
 
 ## Introduction
 Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
@@ -46,7 +43,7 @@ Below is an explanation of each of the instructions that Byte Script currently i
 A quick note on arguments: for instructions that take arguments, the default argument is always `1`. This is so that instructions such as `>;` work similar to their corresponding instructions in BF.
 
 ### Terminator (;)
-The terminator instruction acts as Byte Script's punctuation. Every statement in Byte Script requires a terminator to close it off. The terminator is analgous to the ';' character used as a punctuating token in languages like C, C++, Java, etc.
+The terminator instruction acts as Byte Script's punctuation. Every statement in Byte Script requires a terminator to close it off. The terminator is analogous to the ';' character used as a punctuating token in languages like C, C++, Java, etc.
 
 ### Assignment Instruction (=)
 The assignment instruction assigns the given value to the current cell. This makes it so that users do not have to increment a cell until they get to their desired value. Instead, a user can simply directly assign the value of a cell. If no argument is provided, the cell will be assigned the value of 1.
@@ -211,17 +208,65 @@ Assign current cell to five if the current cell is zero and assign the current c
 ```
 
 ### Loop Start (@)
-Repeats the Byte Script code inside the braces until the given number of times.
+Repeats the Byte Script code inside the braces until the current cell is 0.
 
 Example:
 ```
-Print string that starts at cell zero twenty times
-@20;
+[Cell twenty is used as a loop counter]
+^20;
+=20;
+
+[Print string that starts at cell zero twenty times]
+@;
 {
-    Jump to cell zero
+    [Jump to cell zero]
     ^0;
 
-    Print string starting at cell zero
+    [Print string starting at cell zero]
     $;
+
+    [Jump back to loop counter cell]
+    ^20;
+    
+    [Decrement loop counter cell]
+    -;
 }
+```
+
+## Comments
+There is no official way of doing comments. Any character that is not explicitly part of the instruction set is removed from the source file while preprocessing.
+
+### Other Examples
+Print Hello World
+```
+Hello World Program
+
+[Assign consecutive cells with each ASCII value of the string 'Hello World']
+=72;
+>;
+=101;
+>;
+=108;
+>;
+=108;
+>;
+=111;
+>;
+=32;
+>;
+=87;
+>;
+=111;
+>;
+=114;
+>;
+=108;
+>;
+=100;
+
+[Jump back to cell zero]
+^0;
+
+[Print the cells from the current cell to the end]
+$;
 ```

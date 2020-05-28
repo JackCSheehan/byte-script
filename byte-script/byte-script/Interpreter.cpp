@@ -93,23 +93,18 @@ void Interpreter::interpret(std::istream& stream)
       //Specific steps for evaluating non-sequential instructions
       else if (InstructionUtils::isNonSequentialInstruction(currentInstruction))
       {
+         block = getBlock(stream);
          //Determine what to do depending on the current instruction
          switch (currentInstruction)
          {
          case IF_START:
-            block = getBlock(stream);
             interpretIf(block);
             break;
          case ELSE_START:
-            block = getBlock(stream);
             interpretElse(block);
             break;
          case LOOP_START:
-            //Get argument and block for the loop
-            argument = getSequentialArgument(stream);
-            block = getBlock(stream);
-
-            interpretLoop(block, argument);
+            interpretLoop(block);
             break;
          }
       }
@@ -169,14 +164,6 @@ unsigned char Interpreter::getSequentialArgument(std::istream& stream)
    This is done automatically in C++ when returning an int from a function with type unsigned char
    */
    return argumentValue;
-}
-
-/*
-This functions gets the argument of a non-sequential instruction, such as the argument of the loop isntruction.
-*/
-unsigned char Interpreter::getNonSequentialArgument()
-{
-   return ' ';
 }
 
 /*
@@ -327,7 +314,14 @@ void Interpreter::moveRight(unsigned char cells)
    //If cells need to be added, then add them
    if (cellsToAdd > 0)
    {
-      tape.insert(tape.end(), cellsToAdd, DEFAULT_CELL_VALUE); 
+      try
+      {
+         tape.insert(tape.end(), cellsToAdd, DEFAULT_CELL_VALUE);
+      }
+      catch (...)
+      {
+         throw OutOfMemoryException();
+      }
    }
 
    //Increment the cell pointer so that it points to the right cell
@@ -420,10 +414,10 @@ void Interpreter::interpretElse(std::stringstream& block)
 /*
 Interprets a loop given the block and the argument.
 */
-void Interpreter::interpretLoop(std::stringstream& block, unsigned char argument)
+void Interpreter::interpretLoop(std::stringstream& block)
 {
-   //Loop the number of times indicated by the argument
-   for (int loopCounter = 0; loopCounter < argument; loopCounter++)
+   //Loop while the current cell is not 0
+   while(tape[cellPointer] != 0)
    {
       //Copy block to avoid changes being made to original block stream
       std::stringstream blockCopy(block.str());

@@ -93,4 +93,16 @@ public:
    }
 };
 
+/*
+Exception if maximum size of cell tape is reached.
+*/
+class OutOfMemoryException
+{
+public:
+   std::string what() const
+   {
+      return "Out of memory for program tape";
+   }
+};
+
 #endif
