@@ -22,7 +22,6 @@ private:
 
    //Helper functions
    unsigned char getSequentialArgument(std::istream&);
-   unsigned char getNonSequentialArgument();
    std::stringstream getBlock(std::istream&);
 
    //Functions for specific instructions
@@ -39,7 +38,7 @@ private:
 
    void interpretIf(std::stringstream&);
    void interpretElse(std::stringstream&);
-   void interpretLoop(std::stringstream&, unsigned char);
+   void interpretLoop(std::stringstream&);
 
 public:
    Interpreter(std::string);
