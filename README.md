@@ -15,6 +15,22 @@ In order to make Byte Script Turing complete, it must have an "infinite" amount 
 ## Comments
 There is no official way to write comments. Any character that is not explicitly part of the instruction set is removed from the source file by the preprocessor. I usually prefer using square brackets `[]` to indicate comments. One caveat to this, however, is that comments cannot contain any instruction characters __or integer literals__.
 
+## Introduction
+Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
+```
+>10;
+```
+Byte Script will encounter the `>` then read the next byte of data from the file to determine how far it needs to go. The terminator character is needed to close off the statement.
+
+You can also add an argument to the increment instruction to add a given number to the current cell.
+```
++10;
+```
+The above instruction adds 10 to the current cell.
+
+By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). This is to keep the language consistent with the 8-bit cells in the instruction tape, a concept inspired by BF. Any attempt to input a larger or smaller integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in a floating-point number will simply be truncated.  
+
+## The Instruction Set
 Below is a list of Byte Script's instruction set:
 
 |Instruction Code (ASCII)|Description|
@@ -33,23 +49,6 @@ Below is a list of Byte Script's instruction set:
 |45 (-)                   |subtract from current cell                                                                    |
 |42 (\*)                  |multiply current cell                                                                      |
 |47 (/)                   |divide current cell                                                                           |
-
-## Introduction
-Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
-```
->10;
-```
-Byte Script will encounter the `>` then read the next byte of data from the file to determine how far it needs to go. The terminator character is needed to close off the statement.
-
-You can also add an argument to the increment instruction to add a given number to the current cell.
-```
-+10;
-```
-The above instruction adds 10 to the current cell.
-
-By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). This is to keep the language consistent with the 8-bit cells in the instruction tape, a concept inspired by BF. Any attempt to input a larger or smaller integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in a floating-point number will simply be truncated.  
-
-## The Instruction Set
 Below is an explanation of each of the instructions that Byte Script currently implements.
 
 A quick note on arguments: for instructions that take arguments, the default argument is always `1`. This is so that instructions such as `>;` work similar to their corresponding instructions in BF.
