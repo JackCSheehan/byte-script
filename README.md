@@ -1,9 +1,21 @@
 # Byte Script Language Specifications
-Byte script is an esoteric programming language made up of 1-byte long instructions. Byte Script data is stored in a program tape where each cell is an 8-byte integer. A cell tape pointer points to a specific index on the program tape and instructions can be used to change both the cell pointer and the value pointed to by the cell pointer.
+Byte script is an esoteric programming language made up of 1-byte long instructions. Byte Script data is stored in a program tape where each cell is an 8-bit integer. A cell tape pointer points to a specific index on the program tape and instructions can be used to change both the cell pointer and the value pointed to by the cell pointer.
 
 Byte Script is inspired by BF, but it is intended to be easier to use and understand and produce smaller interpreter sources.
 
-Below is a tentative, work-in-progress list of Byte Script's instruction set (Descriptions marked with asterisks are in early stages and may not be implemented or may be changed):
+## Files
+Write Byte Script code in a Byte Script source file (.bss) and pass Byte Script executable files (.bse) to the interpreter to be executed.
+
+## Technical Processes
+Byte Script is an interpreted language, but interpreting requires a preprocessing stage. The Byte Script preprocessor removes all non-instruction characters from the given source file. This means that no comments or whitespace characters will increase the size of the executable that will need to be run by the interpreter. The preprocessor produces a Byte Script executable file (.bse) which can then be interpreted by Byte Script's interpreter.
+
+## The Program Tape
+In order to make Byte Script Turing complete, it must have an "infinite" amount of memory to solve problems with. Similar to BF, the Byte Script interpreter implements a list of unsigned 8-bit integers that can be navigated and manipulated by the Byte Script instruction set. In the case of my interpreter, this program tape is implemented as an STL deque. For efficiency purposes, my interpreter adds cells to the program tape as needed. In other words, as the user moves "right" on the tape using the `>` instruction, the interpreter will append enough cells to the tape to accommodate the user's request. As such, there is such a thing at any given time as the "end" of the tape, which simply means the end of the number of cells that have currently been allocated on the program tape. This is what is meant when this documentation refers to the "end" of the program tape. For example, the print instruction will print either until a `0` is encountered on the tape or until the cell pointer reaches the "end" of the tape, whichever comes first. If the no more cells can be appended, such as in the case of insufficient memory, the program will end and an error message will be shown. Attempting to move the cell pointer to below the 0th index of the tape does nothing; the cell pointer will go no further "down" the tape than the 0th index.
+
+## Comments
+There is no official way to write comments. Any character that is not explicitly part of the instruction set is removed from the source file by the preprocessor. I usually prefer using square brackets `[]` to indicate comments. One caveat to this, however, is that comments cannot contain any instruction characters __or integer literals__.
+
+Below is a list of Byte Script's instruction set:
 
 |Instruction Code (ASCII)|Description|
 |------------------------|-----------|
@@ -12,14 +24,14 @@ Below is a tentative, work-in-progress list of Byte Script's instruction set (De
 |63 (?)                   |if start                                                                                      |
 |58 (:)                   |else start                                                                                    |
 |64 (@)                   |loop start                                                                                    |
-|36 ($)                   |print from current cell onward until a 0 is encountered                                       |
-|34 (")                   |input the given number of bytes into the tape starting at the current cell from standard input|
-|60 (<)                   |move left given number of cells                                                               |
-|62 (>)                   |move right given number of cells                                                              |
-|94 (^)                   |jump to the given cell                                                                        |
+|36 ($)                   |print                                        |
+|34 (")                   |input  |
+|60 (<)                   |move left                                                                 |
+|62 (>)                   |move right                                                               |
+|94 (^)                   |jump                                                                       |
 |43 (+)                   |add to current cell                                                                           |
 |45 (-)                   |subtract from current cell                                                                    |
-|42 (\*)                  |multiply to current cell                                                                      |
+|42 (\*)                  |multiply current cell                                                                      |
 |47 (/)                   |divide current cell                                                                           |
 
 ## Introduction
@@ -35,10 +47,10 @@ You can also add an argument to the increment instruction to add a given number 
 ```
 The above instruction adds 10 to the current cell.
 
-By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). Any attempt to input a larger or smaller integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in a floating-point number will simply be truncated.  
+By design, Byte Script does not except any arguments outside of the range of an unsigned 8-bit integer (0 - 255). This is to keep the language consistent with the 8-bit cells in the instruction tape, a concept inspired by BF. Any attempt to input a larger or smaller integer literal will simply cause it to wrap around until it is in the range of an unsigned 8-bit integer. Byte Script also has no support for floating-point numbers. Any division operations resulting in a floating-point number will simply be truncated.  
 
 ## The Instruction Set
-Below is an explanation of each of the instructions that Byte Script currently implements. Instructions with an asterisk are currently still in developmental or planning stages and may not be implemented. 
+Below is an explanation of each of the instructions that Byte Script currently implements.
 
 A quick note on arguments: for instructions that take arguments, the default argument is always `1`. This is so that instructions such as `>;` work similar to their corresponding instructions in BF.
 
@@ -50,10 +62,10 @@ The assignment instruction assigns the given value to the current cell. This mak
 
 Examples:
 ```
-Assign fifteen to the current cell
+[Assign fifteen to the current cell]
 =15;
 
-Reassign the current cell to twenty
+[Reassign the current cell to twenty]
 =20;
 ```
 
@@ -62,10 +74,10 @@ This instruction decrements the cell pointer the given number of indices. Trying
 
 Examples:
 ```
-Move left two cells
+[Move left two cells]
 <2;
 
-Move left one cell
+[Move left one cell]
 <;
 ```
 
@@ -74,10 +86,10 @@ This instruction jumps to the given cell. The jump instruction uses the logic of
 
 Examples:
 ```
-Jump to cell twenty
+[Jump to cell twenty]
 ^20;
 
-Jump to cell three
+[Jump to cell three]
 ^3;
 ```
 
@@ -86,21 +98,21 @@ This instruction increments the cell pointer the given number of indices. For ef
 
 Example:
 ```
-Move right two cells
+[Move right two cells]
 >2;
 
-Move right one cell
+[Move right one cell]
 >;
 ```
 
 ### Print Instruction ($)
-The print instruction will print the value of every cell from the current cell onward until either an ASCII 0 is encountered or the end of the allocated program tape is reached. This means that Byte Script supports C-style string. To print something to the console, simply assign the value of contiguous memory locations to spell out some kind of word in ASCII characters. Then, assign the cell after your word to 0 to avoid printing the data in any cells after.
+The print instruction will print the value of every cell from the current cell onward until either an ASCII 0 is encountered or the end of the allocated program tape is reached. This means that Byte Script supports C-style strings. To print something to the console, simply assign the value of contiguous memory locations to spell out some kind of word in ASCII characters. Then, assign the cell after your word to 0 to avoid printing the data in any cells after. Note that the print instruction __has no effect__ on the cell pointer.
 
 Here's a simple hello world program in Byte Script:
 ```
-Assign contiguous memory locations with the ASCII characters for 'Hello World'
+[Assign contiguous memory locations with the ASCII characters for 'Hello World']
 
-Hello
+[Hello]
 =72;
 >;
 =101;
@@ -114,7 +126,7 @@ Hello
 =32;
 >;
 
-World
+[World]
 =87;
 >;
 =111;
@@ -125,14 +137,14 @@ World
 >;
 =100;
 
-Add ASCII null terminator
+[Add ASCII null terminator]
 >;
 =0;
 
-Jump back to beginning of tape
+[Jump back to beginning of tape]
 ^0;
 
-Call print instruction
+[Call print instruction]
 $;
 ```
 
@@ -158,32 +170,32 @@ Adds the given value to the current cell. If no argument is provided, the instru
 Subtracts the given value from the current cell. If no argument is provided, the instruction will subtract 1 from the current cell. If this operation results in a cell value outside the range of an unsigned 8-bit integer, the cell value will wrap around until it is within said range.
 
 ### Multiply Instruction (*)
-Multiplies the given value to the current cell. If no argument is provided, the instruction will multiply 1 to the current cell. If this operation results in a cell value outside the range of an unsigned 8-bit integer, the cell value will wrap around until it is within said range.
+Multiplies the given value by the value in the current cell and puts the result in the current cell. If no argument is provided, the instruction will multiply 1 by the value in the current cell. If this operation results in a cell value outside the range of an unsigned 8-bit integer, the cell value will wrap around until it is within said range.
 
 ### Divide Instruction (/)
-Adds the given value to the current cell. If no argument is provided, the instruction will add 1 to the current cell. If this operation results in a cell value outside the range of an unsigned 8-bit integer, the cell value will wrap around until it is within said range.
+Divides the current cell value by the given value and puts the result into the current cell. If no argument is provided, the instruction will divide the current cell by 1. If this operation results in a cell value outside the range of an unsigned 8-bit integer, the cell value will wrap around until it is within said range. If this operation results in a floating-point value, the decimal portion will be truncated.
 
 Examples:
 ```
-Add five to current cell
+[Add five to current cell]
 +5;
 
-Multiply current cell by five
+[Multiply current cell by five]
 *5;
 
-Subtract five from current cell
+[Subtract five from current cell]
 -5;
 
-Divide current cell by five
+[Divide current cell by five]
 /5;
 ```
 
 ### If Start Instruction (?)
-Executes the Byte Script code between the braces if the cell pointed to by the cell pointer is 0. Program will thrown an error if no braces are present.
+Executes the Byte Script code between the braces if the cell pointed to by the cell pointer is 0. Program will throw an error if no braces are present.
 
 Example:
 ```
-If the current cell is zero, assign current cell to five and move 5 cells right
+[If the current cell is zero, assign current cell to five and move 5 cells right]
 ?
 {
     =5;
@@ -192,11 +204,11 @@ If the current cell is zero, assign current cell to five and move 5 cells right
 ```
 
 ### Else Instruction (:)
-If the current cell is *not* 0, execute the code in the braces. Can be used on its own, though it is called an else instruction because it effectively acts as an `else` statement when used with the `?` instruction. Program will thrown an error if no braces are present.
+If the current cell is *not* 0, execute the code in the braces. Can be used on its own, though it is called an else instruction because it effectively acts as an `else` statement when used with the `?` instruction. Program will throw an error if no braces are present.
 
 Example:
 ```
-Assign current cell to five if the current cell is zero and assign the current cell to ten if the current cell is NOT zero
+[Assign current cell to five if the current cell is zero and assign the current cell to ten if the current cell is NOT zero]
 ?
 {
     =5;
@@ -217,7 +229,7 @@ Example:
 =20;
 
 [Print string that starts at cell zero twenty times]
-@;
+@
 {
     [Jump to cell zero]
     ^0;
@@ -231,42 +243,4 @@ Example:
     [Decrement loop counter cell]
     -;
 }
-```
-
-## Comments
-There is no official way of doing comments. Any character that is not explicitly part of the instruction set is removed from the source file while preprocessing.
-
-### Other Examples
-Print Hello World
-```
-Hello World Program
-
-[Assign consecutive cells with each ASCII value of the string 'Hello World']
-=72;
->;
-=101;
->;
-=108;
->;
-=108;
->;
-=111;
->;
-=32;
->;
-=87;
->;
-=111;
->;
-=114;
->;
-=108;
->;
-=100;
-
-[Jump back to cell zero]
-^0;
-
-[Print the cells from the current cell to the end]
-$;
 ```
