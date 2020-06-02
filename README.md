@@ -15,6 +15,9 @@ In order to make Byte Script Turing complete, it must have an "infinite" amount 
 ## Comments
 There is no official way to write comments. Any character that is not explicitly part of the instruction set is removed from the source file by the preprocessor. I usually prefer using square brackets `[]` to indicate comments. One caveat to this, however, is that comments cannot contain any instruction characters __or integer literals__.
 
+## Running Byte Script Programs
+*This section is currently a work in progress.*
+
 ## Introduction
 Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
 ```
@@ -49,6 +52,7 @@ Below is a list of Byte Script's instruction set:
 |45 (-)                   |subtract from current cell                                                                    |
 |42 (\*)                  |multiply current cell                                                                      |
 |47 (/)                   |divide current cell                                                                           |
+
 Below is an explanation of each of the instructions that Byte Script currently implements.
 
 A quick note on arguments: for instructions that take arguments, the default argument is always `1`. This is so that instructions such as `>;` work similar to their corresponding instructions in BF.
