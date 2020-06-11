@@ -14,7 +14,7 @@ public:
 
    std::string what() const
    {
-      return "Could not open executable: " + file;
+      return "Error: Could not open executable: " + file;
    }
 };
 
@@ -31,7 +31,7 @@ public:
 
    std::string what() const
    {
-      return "Could not open source: " + file;
+      return "Error:  Could not open source: " + file;
    }
 };
 
@@ -48,7 +48,7 @@ public:
 
    std::string what() const
    {
-      return "Syntax error at index: " + std::to_string(errorIndex);
+      return "Error: Syntax error at index: " + std::to_string(errorIndex);
    }
 };
 
@@ -57,10 +57,10 @@ Exception for reaching EOF while trying to parse an argument.
 */
 class ReachedEOFException
 {
-
+public:
    std::string what() const
    {
-      return "Reached EOF while parsing argument for instruction";
+      return "Error: Reached EOF while parsing argument for instruction";
    }
 };
 
@@ -77,7 +77,7 @@ public:
 
    std::string what() const
    {
-      return "Invalid argument: " + argument;
+      return "Error: Invalid argument: " + argument;
    }
 };
 
@@ -89,7 +89,7 @@ class DivisionByZeroException
 public:
    std::string what() const
    {
-      return "Attempted to divide by 0";
+      return "Error: Attempted to divide by 0";
    }
 };
 
@@ -101,7 +101,7 @@ class OutOfMemoryException
 public:
    std::string what() const
    {
-      return "Out of memory for program tape";
+      return "Error: Out of memory for program tape";
    }
 };
 
