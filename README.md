@@ -16,7 +16,20 @@ In order to make Byte Script Turing complete, it must have an "infinite" amount 
 There is no official way to write comments. Any character that is not explicitly part of the instruction set is removed from the source file by the preprocessor. I usually prefer using square brackets `[]` to indicate comments. One caveat to this, however, is that comments cannot contain any instruction characters __or integer literals__.
 
 ## Running Byte Script Programs
-*This section is currently a work in progress.*
+Only preprocess a source file:
+```
+$ ./byte-script.exe -p <source.bss>
+```
+
+Only interpret an executable file:
+```
+$ ./byte-script.exe -i <source.bse>
+```
+
+Preprocess and interpret a source file:
+```
+$ ./byte-script.exe -pi <source.bss>
+```
 
 ## Introduction
 Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
