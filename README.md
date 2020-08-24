@@ -32,7 +32,7 @@ $ ./byte-script.exe -pi <source.bss>
 ```
 
 ## Introduction
-Most of the above instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
+Most of the instructions can take an argument of a single 8-bit integer. For example, you can tell Byte Script to move 10 cells forward in the program tape with this instruction:
 ```
 >10;
 ```
