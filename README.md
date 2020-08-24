@@ -236,7 +236,7 @@ Example:
 ```
 
 ### Loop Start (@)
-Repeats the Byte Script code inside the braces until the current cell is 0. If you change the cell pointer inside the loop, make sure you switch back to the cell you are using to count your loop. This is because
+Repeats the Byte Script code inside the braces until the current cell is 0. If you change the cell pointer inside the loop, make sure you switch back to the cell you are using to count your loop.
 
 Example:
 ```
