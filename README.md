@@ -211,7 +211,7 @@ Executes the Byte Script code between the braces if the cell pointed to by the c
 
 Example:
 ```
-[If the current cell is zero, assign current cell to five and move 5 cells right]
+[If the current cell is zero, assign current cell to five and move five cells right]
 ?
 {
     =5;
